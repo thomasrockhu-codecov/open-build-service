@@ -160,26 +160,29 @@ jobs:
           paths:
             - .
   meow:
+    docker:
+      - <<: *frontend_base
     steps:
+      - attach_workspace:
+         at: .
       - run:
-          name: Upload coverage to codecov
+          name: Upload coverage to codecov (latest)
           command: |
             curl -LOs https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
             ./codecov -v -F "latest"
       - run:
-          name: Upload coverage to codecov
+          name: Upload coverage to codecov (0.4.0)
           command: |
             curl -LOs https://uploader.codecov.io/v0.4.0/linux/codecov
             chmod +x codecov
             ./codecov -v -F "0.4.0"
       - run:
-          name: Upload coverage to codecov
+          name: Upload coverage to codecov (0.3.5)
           command: |
             curl -LOs https://uploader.codecov.io/v0.3.5/linux/codecov
             chmod +x codecov
             ./codecov -v -F "0.3.5"
-
 
   linters:
     docker:
@@ -553,7 +556,9 @@ workflows:
     jobs:
       - pipeline_settings
       - checkout_code
-      - meow
+      - meow:
+          requires:
+            - checkout_code
       - linters:
           requires:
             - checkout_code
